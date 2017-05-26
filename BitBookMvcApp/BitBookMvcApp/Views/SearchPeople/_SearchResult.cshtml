@@ -1,0 +1,91 @@
+﻿@model List<BitBookMvcApp.Models.ViewModels.SearchResult>
+@{
+    string value = null;
+    int userId = (int)Session["UserId"];
+}
+
+@if (Model != null)
+{
+    foreach (var item in Model)
+    {
+        if (item.SearchedProfileId != userId)
+        {
+            string htmlClass;
+            string onClick = "";
+            if (item.IsAccepted == null)
+            {
+                value = "Add Friend";
+                htmlClass = "col-md-offset-2 col-md-8 btn btn-primary";
+            }
+            else
+            {
+
+                if (item.IsAccepted.Value)
+                {
+                    value = "Unfriend";
+                    htmlClass = "col-md-offset-2 col-md-8 btn btn-danger";
+                }
+                else
+                {
+                    if (item.ReceiverId == item.SearchedProfileId)
+                    {
+                        value = "Friend Request Sent";
+                        htmlClass = "col-md-offset-2 col-md-8 btn btn-default disable";
+                        <p></p>
+                    }
+                    else
+                    {
+                        value = "Accept";
+                        htmlClass = "col-md-offset-2 col-md-8 btn btn-success";
+                    }
+
+                }
+            }
+            using (Html.BeginForm("ResponseSearch", "SearchPeople"))
+            {
+                @Html.Hidden("searchUserId", item.SearchedProfileId)
+                @Html.Hidden("friendRequestId", item.FriendRequestId)
+                <div class="form-horizontal">
+                    <div class="form-group well">
+
+                        @Html.LabelFor(modelItem => item.Name, item.Name, new { @class = "col-md-2 control-label" })
+
+                        <div class="">
+                            <input type="submit" id="addButton" name="searchType" class='@htmlClass' value='@value' />
+
+                            @if (item.IsAccepted != null && !item.IsAccepted.Value && item.SenderId == item.SearchedProfileId)
+                            {
+                                <input type="submit" value="Ignore" name="searchType" id="addButton" class="col-md-offset-2 col-md-8 btn btn-danger" />
+                            }
+                            else if (item.IsAccepted != null && !item.IsAccepted.Value && item.ReceiverId == item.SearchedProfileId)
+                            {
+                                <input type="submit" value="Cancel Request" name="searchType" id="addButton" class="col-md-offset-2 col-md-8 btn btn-warning" />
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+}
+<script>
+    /*$(document).ready(function () {
+        $("#addButton").addClass('disabled');
+        $("#addButton").prop('disabled', true);
+    });*/
+    /*function dis() {
+        var value = document.getElementById("addButton").value;
+        if (value === "Friend Request Sent") {
+            $("#addButton").addClass('disabled');
+            $("#addButton").prop('disabled', true);
+        }
+    }*/
+
+    /*function disable() {
+        document.getElementById("addButton").disabled=true;
+    }*/
+</script>
+
+
+<script src="~/Scripts/jquery-3.1.1.min.js"></script>
+<script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
